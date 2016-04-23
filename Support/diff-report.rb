@@ -50,21 +50,19 @@ while line = diff_io.gets
     lineno   = $3.to_i
     deleted  = 0
     in_block = true
-  elsif in_block
-    if line =~/^ /
-      lineno += 1
-      deleted = 0
-    elsif line =~/^-/
-      deleted += 1
-    elsif line =~/^\+/
-      if deleted == 0
-        added << lineno
-      else
-        changed << lineno
-        deleted -= 1
-      end
-      lineno += 1
+    next
+  end
+  next unless in_block
+
+  case line[/^[ +-]/]
+  when " " then deleted  = 0; lineno += 1
+  when "-" then deleted += 1
+  when "+"
+    case deleted
+    when 0 then added   << lineno
+    else        changed << lineno; deleted -= 1
     end
+    lineno += 1
   end
 end
 
