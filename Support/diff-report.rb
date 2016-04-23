@@ -9,7 +9,7 @@ exit unless scm && path
 
 GIT_CMD  = ENV.fetch "TM_GIT", "git"
 HG_CMD   = ENV.fetch "TM_HG",  "hg"
-DIFF_CMD = %w[ diff -u ]
+DIFF_CMD = %w[ diff -u --ignore-all-space ] # one might wanna remove --ignore-all-space
 
 Pathname.class_eval{ alias_method :to_str, :to_s } # make working with pathnames as strings a bunch easier
 
