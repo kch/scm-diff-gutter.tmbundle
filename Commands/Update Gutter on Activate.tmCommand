@@ -15,7 +15,7 @@ load ENV["TM_BUNDLE_SUPPORT"] + "/diff-report.rb"
 	<key>inputFormat</key>
 	<string>text</string>
 	<key>name</key>
-	<string>Update Gutter on Save</string>
+	<string>Update Gutter on Activate</string>
 	<key>outputCaret</key>
 	<string>afterOutput</string>
 	<key>outputFormat</key>
@@ -23,11 +23,11 @@ load ENV["TM_BUNDLE_SUPPORT"] + "/diff-report.rb"
 	<key>outputLocation</key>
 	<string>discard</string>
 	<key>scope</key>
-	<string>attr.scm.git, attr.scm.hg</string>
+	<string>attr.scm.git</string>
 	<key>semanticClass</key>
-	<string>callback.document.did-save</string>
+	<string>callback.application.did-activate</string>
 	<key>uuid</key>
-	<string>081613BD-FBAF-4339-87AC-ED8FE942C525</string>
+	<string>C8929EF8-DEC0-41CA-A6E0-C46C0942D931</string>
 	<key>version</key>
 	<integer>2</integer>
 </dict>
