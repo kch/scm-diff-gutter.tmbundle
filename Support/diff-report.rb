@@ -4,6 +4,21 @@ require "shellwords"
 
 # to test directly in shell without TM interaction: TM_SCM_NAME=git TM_FILEPATH=some_file diff-report.rb < some_file_changed
 
+
+def reset_marks(path, lines_added=[], lines_changed=[])
+  [ [:added,   lines_added],
+    [:changed, lines_changed],
+  ].each do |k, lines|
+    mark = "#{ENV["TM_BUNDLE_SUPPORT"]}/#{k}.pdf"
+    mate = ENV["TM_MATE"]
+    cmd  = mate ? [mate] : %w[ echo mate ] # if invoked from outside textmate (without TM_MATE set) just print what it would run, instead
+    cmd << "--clear-mark=#{mark}"
+    cmd.concat ["--set-mark=#{mark}", *lines.map{|n| "--line=#{n}" }] unless lines.empty?
+    cmd << path
+    system *cmd
+  end
+end
+
 scm, path = ENV.values_at "TM_SCM_NAME", "TM_FILEPATH"
 exit unless scm && path
 
@@ -17,7 +32,7 @@ case scm
 when "git"
   root_cmd    = "#{GIT_CMD} rev-parse --show-toplevel"
   tracked_cmd = "#{GIT_CMD} ls-files -z %s"
-  cat_cmd     = "#{GIT_CMD} show :%s"
+  cat_cmd     = "#{GIT_CMD} show :%s" # this cats the file in the staged version
 when "hg"
   root_cmd    = "#{HG_CMD} root"
   tracked_cmd = "#{HG_CMD} status -nq0 %s"
@@ -28,6 +43,7 @@ end
 path = Pathname.new(path)
 path = path.realpath if path.relative? # mostly for direct testing
 exit unless path.exist?
+reset_marks path
 
 Dir.chdir path.dirname
 scm_root = `#{root_cmd} 2>/dev/null`.chomp
@@ -66,14 +82,4 @@ while line = diff_io.gets
   end
 end
 
-def reset_marks(path, lines, mark)
-  mate = ENV["TM_MATE"]
-  cmd  = mate ? [mate] : %w[ echo mate ] # if invoked from outside textmate (without TM_MATE set) just print what it would run, instead
-  cmd << "--clear-mark=#{mark}"
-  cmd.concat ["--set-mark=#{mark}", *lines.map{|n| "--line=#{n}" }] unless lines.empty?
-  cmd << path
-  system *cmd
-end
-
-reset_marks path, added,   "#{ENV["TM_BUNDLE_SUPPORT"]}/added.pdf"
-reset_marks path, changed, "#{ENV["TM_BUNDLE_SUPPORT"]}/changed.pdf"
+reset_marks path, added, changed
